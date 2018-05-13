@@ -7,7 +7,7 @@ Identification
     License:    LICENSE_NAME, see LICENSE_FILE for more details.
 
 Description
-    Authentication and authority management for the application.
+    Authentication and authority management for the application. Saving comment
 """
 
 import json
