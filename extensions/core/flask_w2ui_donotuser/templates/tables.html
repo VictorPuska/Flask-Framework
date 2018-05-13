@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% set user_menu = True %}
+{% block title %}Flask Computers - Tables{% endblock %}
+{% block heading %}Users{% endblock %}
+{% block body %}
+    <div id="layout">
+        {% for t in tables %}
+            <p><a href="{{ t }}">{{ t }}</a></p>
+        {% endfor %}
+    </div>
+{% endblock body %}
+{% block script %}
+{% endblock script %}

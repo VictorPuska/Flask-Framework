@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    {% include 'include/bootstrap.html' %}
+    {% include 'include/corecss.html' %}
+</head>
+<body>
+    {% set active=("", "active", "") %}
+    {% include "include/navbar.html" %}
+    <h2>URL Mapping Table</h2>
+    <table class="table table-bordered table-striped table-hover table-condensed">
+        <tr>
+            <th>URL</th>
+            <th>Methods</th>
+            <th>Endpoint</th>
+        </tr>
+         {% for u in urlmap %}
+            <tr>
+                <td>{{ u.url}} </td>
+                <td>{{ u.methods }}</td>
+                <td>{{ u.endpoint }}</td>
+            </tr>
+         {% endfor %}
+    </table>
+
+</body>
+</html>

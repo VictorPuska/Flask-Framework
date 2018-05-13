@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Flask Core</title>
+    {% include "include/jquery.html" %}
+    {% include "include/bootstrap.html" %}
+    {% include "include/corecss.html" %}
+</head>
+<body>
+    {% set active=("active","","") %}
+    {% include "include/navbar.html" %}
+    <h2>Python Path</h2>
+    <table class="table table-bordered table-striped table-hover table-condensed">
+        <tr><th>Directory</th></tr>
+        {% for d in pypath %}
+            <tr><td>{{ d }}</td></tr>
+        {% endfor %}
+    </table>
+    <h2>URL Mapping Table</h2>
+    <table class="table table-bordered table-striped table-hover table-condensed">
+        <tr>
+            <th>URL</th>
+            <th>Methods</th>
+            <th>Endpoint</th>
+        </tr>
+         {% for u in urlmap %}
+            <tr>
+                <td>{{ u.url}} </td>
+                <td>{{ u.methods }}</td>
+                <td>{{ u.endpoint }}</td>
+            </tr>
+         {% endfor %}
+    </table>
+
+    <h2>Users</h2>
+    <table class="table table-bordered table-striped table-hover table-condensed">
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Active</th>
+            <th>Created</th>
+            <th>Current</th>
+        </tr>
+         {% for u in users %}
+            <tr>
+                <td>{{ u.id}} </td>
+                <td>{{ u.name }}</td>
+                <td>{{ u.active }}</td>
+                <td>{{ u.created }}</td>
+                <td>{{ u.is_current }}</td>
+            </tr>
+         {% endfor %}
+    </table>
+
+    <a href="http://flask.pocoo.org/">
+        <img src="http://flask.pocoo.org/static/badges/flask-powered.png"
+             border="0"
+             alt="Flask powered"
+             title="Flask powered"
+             style="padding-top: 20px">
+    </a>
+</body>
+</html>

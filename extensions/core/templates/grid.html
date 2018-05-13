@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>W2UI Table: {{ table }}</title>
+        {% include 'include/jquery.html' %}
+        {% include 'include/w2ui.html' %}
+    </head>
+    <body>
+        <div id="banner"><h1>W2UI_Table: {{ table }}</h1></div>
+        <div id="layout"></div>
+        <script>
+            $(function () {
+                w2utils.settings.dateFormat = 'dd/mm/yyyy';
+                w2utils.settings.timeFormat = 'h12';
+                w2utils.settings.datetimeFormat = 'dd/mm/yyyy|HH:mi pm';
+
+                var pstyle = 'background-color: #F5F6F7; border: 1px solid #dfdfdf; padding: 5px;';
+                var layout = $('#layout');
+
+                var addCount = -1;
+
+                var grid1 = {
+                    name: 'grid_1',
+                    recid: '{{ rec_id }}',
+                    show: { footer: true,
+                            toolbar: true,
+                            toolbarReload   : true,
+                            toolbarColumns  : true,
+                            toolbarSearch   : true,
+                            toolbarAdd      : true,
+                            toolbarDelete   : true,
+                            toolbarSave     : true
+                    },
+                    url: '{{ url }}',
+                    toolbar: {},
+                    searches: {{ searches | tojson }},
+                    columns: {{ cols | tojson }},
+                    parser: function (responseText) {
+                        var data = $.parseJSON(responseText);
+                        if (data.hasOwnProperty('updates')) {
+                            len = data.updates.length
+                            for (j = 0; j < len; j++) {
+                                r = data.updates[j];
+                                w2ui.grid_1.set(r.recid, r.record);
+                                rowno = w2ui.grid_1.get(r.recid, true)
+                                w2ui.grid_1.records[rowno].recid = r.record.id;
+                            }
+                        }
+                        return data;
+                    },
+                    onAdd: function(event) {
+                        record = {};
+                        record[w2ui.grid_1.recid] = addCount;
+                        w2ui.grid_1.add(record);
+                        w2ui.grid_1.total += 1;
+                        addCount -= 1;
+                        //$('#grid_grid_1_edit_'+ (this.records.length - 1) +'_1').focus();
+                    },
+                    onSave: function(event) {
+                        //console.log(event);
+            }       };
+                // this ensure that the layout height will consume the available window height
+                window.onresize = function() {
+                    //layout.height(window.innerHeight - $('#banner').height() - 5);
+                    layout.height(window.innerHeight - 5);
+                };
+                layout.w2layout({
+                    name: 'layout',
+                    panels: [
+                        //{ type: 'top',  size: 50, resizable: false, style: pstyle, content: 'top' },
+                        //{ type: 'left', size: 200, resizable: true, style: pstyle, content: 'left' },
+                        { type: 'main', content: $().w2grid(grid1) }
+                        //{ type: 'main', style: pstyle }
+                        //{ type: 'preview', size: '50%', resizable: true, style: pstyle, content: 'preview' },
+                        //{ type: 'right', size: 200, resizable: true, style: pstyle, content: 'right' },
+                        //{ type: 'bottom', size: 50, resizable: true, style: pstyle, content: 'bottom' }
+                    ]
+                });
+
+                window.onresize(); // force resize action at start.
+            });
+        </script>
+    </body>
+</html>

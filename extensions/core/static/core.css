@@ -1,0 +1,44 @@
+/*
+  Colours generated from http://paletton.com
+*/
+/* Palette: http://paletton.com/palette.php?uid=7320u0kt%2BlZlOstrKqzzSiaJidt */
+/* Main Primary color */
+/* Main Secondary color (1) */
+/* Main Secondary color (2) */
+/* Main Complement color */
+/* END PALETTE */
+body {
+  margin: 10px;
+}
+h1,
+h2,
+h3,
+h4,
+h5 {
+  color: #552700;
+}
+.table th {
+  background-color: #D46A6A;
+  color: white;
+}
+.navbar-inverse {
+  background-color: #D46A6A;
+  border-color: #AA3939;
+}
+.navbar-inverse .navbar-nav > li > a,
+.navbar-inverse .navbar-nav > li > a:focus {
+  color: white;
+}
+.navbar-inverse .navbar-brand:hover,
+.navbar-inverse .navbar-nav > li > a:hover {
+  color: #550000;
+}
+.navbar-inverse .navbar-nav > .active > a,
+.navbar-inverse .navbar-nav > .active > a:hover,
+.navbar-inverse .navbar-nav > .active > a:focus {
+  color: white;
+  background-color: #FFAAAA;
+}
+.navbar-inverse .navbar-brand {
+  color: white;
+}

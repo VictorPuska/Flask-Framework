@@ -1,0 +1,101 @@
+*COLUMNS
+caption         : '',           // column caption
+field           : '',           // field name to map column to a record
+size            : null,         // size of column in px or %
+min             : 15,           // minimum width of column in px
+max             : null,         // maximum width of column in px
+gridMinWidth    : null,         // minimum width of the grid when column is visible
+hidden          : false,        // indicates if column is hidden
+sortable        : false,        // indicates if column is sortable
+searchable      : false,        // indicates if column is searchable, bool/string: int,float,date,...
+resizable       : true,         // indicates if column is resizable
+hideable        : true,         // indicates if column can be hidden
+attr            : '',           // string that will be inside the <td ... attr> tag
+style           : '',           // additional style for the td tag
+render          : null,         // string or render function
+title           : null,         // string or function for the title property for the column cells
+editable        : {},           // editable object if column fields are editable
+frozen          : false,        // indicates if the column is fixed to the left
+info            : null          // info bubble, can be bool/object
+
+*SEARCHES
+type            : 'text',       // type of the search (see below)
+field           : '',           // field name to submit to server
+caption         : '',           // caption of the search
+inTag           : '',           // text that will be inside <input ...> tag
+outTag          : '',           // text that will be outside <input ...> tag
+hidden          : false,        // indicates if search is show or hidden
+options         : {}            // options for w2field object
+
+*SEARCH.TYPES
+text
+int
+float
+hex
+money
+currency
+percent
+alphanumeric
+date
+time
+list
+combo
+enum
+
+*FIELD
+name            : '',           // name of field, must match name of input or select
+type            : null,         // type of field (same types as for w2field object)
+options         : {},           // additional options for the field
+required        : false,        // required or not
+html            : {}            // info for auto generation (see generateHTML)
+
+*FIELD.HTML
+caption         : '',           // caption for the field
+attr            : '',           // attributes inside input/select control
+text            : '',           // text to display on the right from the control
+span            : undefined,    // number of span, will be added to class="w2ui-span{span}"
+page            : undefined,    // page number if there are tabs in the form
+column          : undefined     // column number
+
+*FIELD.OPTIONS/SEARCH.OPTIONS
+min             : null,         // min value
+max             : null,         // max value
+step            : 1,            // step to increment with keyboard
+autoFormat      : true,         // indicates if to auto format the number
+currencyPrefix  : -,            // symbol for currency prefix
+currencySuffix  : -,            // symbol for currency suffix
+currencyPrecision -,            // defines precision, default = 2
+decimalSymbol   : -,            // symbol for fractions
+groupSymbol     : -,            // symbol for number grouping
+arrows          : false,        // indicates if to display arrows on the right side
+transparent     : false,        // allow transparent color in color dialog
+keyboard        : true,         // indicates if keyboard should be supported
+precision       : null,         // defines precision for auto format
+silent          : true,         // indicate if to correct silently or display error tag
+prefix          : '',           // control prefix
+suffix          : ''            // control suffix
+
+*FIELD.TYPES
+text
+textarea
+email
+pass
+password
+int
+float
+money
+currency (alias for money)
+percent
+hex
+alphanumeric
+color
+date
+time
+list
+combo
+enum
+file
+select
+radio
+checkbox
+toggle

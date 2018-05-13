@@ -1,0 +1,189 @@
+"""
+Identification
+    :Author:     Victor Puska
+    :Written:    Dec 29, 2017
+    :Copyright:  (c) 2017 by VICTOR PUSKA.
+    :License:    LICENSE_NAME, see LICENSE_FILE for more details.
+
+Description
+    Authentication and authority management for the application.
+"""
+
+import os, sys, urllib
+from flask import Flask, Blueprint, render_template, url_for, request, current_app
+from typing import Dict, List
+from shutil import copy2
+
+
+class _FileEntry(object):
+
+    def __init__(self, name, basedir, logdir):
+        self.key = os.path.join(logdir, name)
+        self.path = os.path.join(basedir, name)
+        self.isdir = os.path.isdir(self.path)
+        self.modified = os.stat(self.path).st_mtime_ns
+
+
+class FlaskCoreOld(Flask):
+    """The FlaskCore object inherits from :class:`Flask`, and is used to create the WSGI application
+    object.
+    """
+
+    def __init__(self, import_name, static_path=None, static_url_path=None,
+                 static_folder='static', static_source='static', template_folder='templates',
+                 instance_path=None, instance_relative_config=False,
+                 root_path=None, collect_static_core=True):
+        """
+        Inherits from the :class:`Flask` class.
+
+        :param import_name: the name of the application package
+        :param static_url_path: can b e used to specify a different path for the
+                                static files on the web.  Defaults to the name
+                                of the `static_folder` folder.
+        :param static_folder: the folder with static files that should be served
+                              at `static_url_path`.  Defaults to the ``'staticall'``
+                              folder in the root path of the application.
+        :param static_source: the folder with the applications static files, including files
+                              that may override blueprint files.  These files are copied
+                              to the static_folder using the collect_static() method.
+                              Default to ``'static'``
+        :param template_folder: the folder that contains the templates that should
+                                be used by the application.  Defaults to
+                                ``'templates'`` folder in the root path of the
+                                application.
+        :param instance_path: An alternative instance path for the application.
+                              By default the folder ``'instance'`` next to the
+                              package or module is assumed to be the instance
+                              path.
+        :param instance_relative_config: if set to ``True`` relative filenames
+                                         for loading the config are assumed to
+                                         be relative to the instance path instead
+                                         of the application root.
+        :param root_path: Flask by default will automatically calculate the path
+                          to the root of the application.  In certain situations
+                          this cannot be achieved (for instance if the package
+                          is a Python 3 namespace package) and needs to be
+                          manually defined.
+        """
+        Flask.__init__(self, import_name, static_path, static_url_path,
+                       static_folder, template_folder,
+                       instance_path, instance_relative_config,
+                       root_path)
+
+        self.registered_blueprint_statics: List[Blueprint] = []
+        self.static_source = os.path.abspath(static_source)
+        self.context_processor(self.context_extensions)
+
+        bp = Blueprint('core', __name__,
+                       template_folder="templates",
+                       static_url_path="/static/core",
+                       static_folder="static")
+        bp.add_url_rule("/", endpoint="index", view_func=self.view_index)
+        bp.add_url_rule("/login", endpoint="login", view_func=self.view_login)
+        self.register_blueprint(bp)
+        if collect_static_core:
+            self.register_static(bp)
+
+    def view_index(self):
+        output = []
+        for rule in current_app.url_map.iter_rules():
+            options = {}
+            for arg in rule.arguments:
+                options[arg] = "[{0}]".format(arg)
+            obj = {}
+            obj['endpoint'] = rule.endpoint
+            obj['methods'] = ','.join(rule.methods)
+            obj['url'] = urllib.parse.unquote(url_for(rule.endpoint, **options))
+            output.append(obj)
+        return render_template('index.html ', pypath=sys.path, urlmap=output)
+
+    def view_login(self):
+        return render_template('login.html')
+
+    def static_url_extension(self, filename, blueprint=None):
+        if blueprint is None:
+            endpoint = "static"
+        else:
+            if blueprint == ".":
+                blueprint = request.blueprint
+            endpoint = blueprint + ".static"
+            for bp in self.registered_blueprint_statics:
+                if bp.name == blueprint:
+                    endpoint = "static"
+                    break
+        return url_for(endpoint, filename=filename)
+
+    def context_extensions(self):
+        return {'static_url': self.static_url_extension}
+
+    def register_static(self, blueprint: Blueprint):
+        self.registered_blueprint_statics.append(blueprint)
+
+    def collect_static(self):
+        print("Collecting static files...")
+        source_files: Dict[str, _FileEntry] = {}
+        # catalog static files for registered blueprints
+        for bp in self.registered_blueprint_statics:
+            FlaskCore.catalog_static_files(source_files, bp.static_folder, "")
+        # catalog static files for application
+        FlaskCore.catalog_static_files(source_files, self.static_source, "")
+        # catalog static files already in static directory (where we will write our static files to
+        static_out: Dict[str, _FileEntry] = {}
+        FlaskCore.catalog_static_files(static_out, self.static_folder, "")
+
+        # copy files from source folders to static folder
+        for f in source_files.values():
+            src = f.path
+            dst = os.path.join(self.static_folder, f.key)
+            if f.isdir:
+                if f.key not in static_out:
+                    os.makedirs(dst)
+            else:
+                if f.key in static_out:
+                    if f.modified != static_out[f.key].modified:
+                        print("  Updating static file: ", f.key)
+                        copy2(src, dst)
+                else:
+                    print("  Adding static file: ", f.key)
+                    copy2(src, dst)
+
+        # remove static files no longer required
+        for f in static_out.values():
+            if f.key not in source_files:
+                if not f.isdir:
+                    print("  Removing static file: ", f.key)
+                    os.remove(f.path)
+
+        # remove empty directories
+        for f in os.listdir(self.static_folder):
+            f = os.path.join(self.static_folder, f)
+            if os.path.isdir(f):
+                FlaskCore.remove_empty_dirs(f)
+
+    @staticmethod
+    def catalog_static_files(catalog: Dict[str, _FileEntry], basedir: str, logdir: str):
+        """ Recursively read through file directory list building catalog of files.
+
+        Args:
+            catalog (Dict[str, _FileEntry]): Catalog to be assembled
+            basedir (str): Path/directory name to catalog
+            logdir (str): Logical (relative) static file path name
+        """
+        for f in os.listdir(basedir):
+            entry = _FileEntry(f, basedir, logdir)
+            catalog[entry.key] = entry
+            if entry.isdir:
+                FlaskCore.catalog_static_files(catalog, entry.path, os.path.join(logdir, f))
+
+    @staticmethod
+    def remove_empty_dirs(path: str):
+        count = 0
+        for f in os.listdir(path):
+            f = os.path.join(path, f)
+            if os.path.isfile(f):
+                count += 1
+            else:
+                count += FlaskCore.remove_empty_dirs(path)
+        if count == 0:
+            os.rmdir(path)
+        return count

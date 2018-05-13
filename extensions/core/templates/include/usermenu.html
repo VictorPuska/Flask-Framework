@@ -1,0 +1,22 @@
+{% if user.is_authenticated %}
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+            <span class="glyphicon glyphicon-user"></span>
+            &nbsp{{ user.name }}&nbsp
+            <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu">
+            {% if user.is_adminuser %}
+                <li><a href="#">Admin</a></li>
+            {% endif %}
+            <li><a href="{{ url_for('.logout')}}" onclick="return confirm('Are you sure?')">Logout</a></li>
+        </ul>
+    </li>
+{% else %}
+    <li>
+        <a href="#"><span class="glyphicon glyphicon-user"></span>&nbspSign Up</a>
+    </li>
+    <li>
+        <a href="{{ url_for('.login')}}"><span class="glyphicon glyphicon-log-in"></span>&nbspLogin&nbsp</a>
+    </li>
+{% endif %}

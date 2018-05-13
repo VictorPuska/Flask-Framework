@@ -1,0 +1,20 @@
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <img class="navbar-brand" src="http://flask.pocoo.org/static/badges/flask-powered.png"
+             border="0"
+             alt="Flask powered"
+             title="Flask powered"
+             >
+          <a class="navbar-brand" href="#">Flask CORE</a>
+        </div>
+        <ul class="nav navbar-nav">
+            <li class="{{ active[0] }}"><a href="{{ url_for('.index') }}">Home</a></li>
+            <li class="{{ active[1] }}"><a href="{{ url_for('.diagnostics') }}">Diagnostics</a></li>
+            <li class="{{ active[2] }}"><a href="#">Page 2</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+            {% include"include/usermenu.html" %}
+        </ul>
+    </div>
+</nav>
